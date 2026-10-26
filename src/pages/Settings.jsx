@@ -20,9 +20,13 @@ import {
   Sun,
   Bell,
   CheckCircle2,
-  Info
+  Info,
+  Lock,
+  ShieldCheck,
+  KeyRound
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { useSecurity } from '../context/SecurityContext'
 
 export const Settings = () => {
   const {
@@ -60,6 +64,15 @@ export const Settings = () => {
   // Storage analytics
   const [storageStats, setStorageStats] = useState(getStorageStats())
 
+  // Security Context
+  const { passcode, changePasscode, resetPasscode, lockApp, defaultPasscode } = useSecurity()
+  const [pinChangeState, setPinChangeState] = useState({
+    currentPin: '',
+    newPin: '',
+    confirmPin: ''
+  })
+  const [isChangingPin, setIsChangingPin] = useState(false)
+
   // Backup & Restore states
   const [importSummary, setImportSummary] = useState(null)
   const [dataToRestore, setDataToRestore] = useState(null)
@@ -68,6 +81,27 @@ export const Settings = () => {
   useEffect(() => {
     setStorageStats(getStorageStats())
   }, [income, expenses, emiRecords, loans, rentRecords])
+
+  const handleChangePasscodeSubmit = (e) => {
+    e.preventDefault()
+    if (pinChangeState.newPin !== pinChangeState.confirmPin) {
+      toast.error('New passcode and confirm passcode do not match.')
+      return
+    }
+    const result = changePasscode(pinChangeState.currentPin, pinChangeState.newPin)
+    if (result.success) {
+      toast.success('Passcode updated successfully!')
+      setPinChangeState({ currentPin: '', newPin: '', confirmPin: '' })
+      setIsChangingPin(false)
+    } else {
+      toast.error(result.error || 'Failed to change passcode.')
+    }
+  }
+
+  const handleResetPasscode = () => {
+    resetPasscode()
+    toast.success(`Passcode reset to master default (${defaultPasscode})`)
+  }
 
   const handleSaveProfile = (e) => {
     e.preventDefault()
@@ -297,6 +331,155 @@ export const Settings = () => {
             </button>
           </div>
         </form>
+      </div>
+
+      {/* App Passcode Security Card */}
+      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400">
+              <Lock className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold font-heading text-slate-900 dark:text-white">
+                Passcode Protection & Screen Privacy
+              </h3>
+              <p className="text-xs text-slate-500">
+                Auto-prompts on app open • Hidden masked entry keeps your finances confidential
+              </p>
+            </div>
+          </div>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            Active (Locked on Open)
+          </span>
+        </div>
+
+        {/* Security Info & Master Passcode Notice */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 space-y-1.5">
+            <p className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+              <KeyRound className="w-4 h-4 text-indigo-500" />
+              Master Passcode Configured
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              Default passcode is set to <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-1.5 py-0.5 rounded border border-indigo-200 dark:border-indigo-800">{defaultPasscode}</span>. When opening FinTrack, enter this code to unlock.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 space-y-1.5">
+            <p className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-500" />
+              Screen Privacy ("Kisi Ko Na Dikhe")
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              Password digits are masked with privacy dots (● ● ● ●) so onlookers or people nearby cannot view your passcode.
+            </p>
+          </div>
+        </div>
+
+        {/* Action Controls */}
+        <div className="flex flex-wrap items-center gap-3 pt-2">
+          <button
+            type="button"
+            onClick={lockApp}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs sm:text-sm font-semibold transition-all active:scale-95 cursor-pointer shadow-sm"
+          >
+            <Lock className="w-4 h-4 text-rose-400" />
+            <span>Lock Screen Now (Test Lock)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsChangingPin(!isChangingPin)}
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-xs sm:text-sm font-semibold transition-all border border-indigo-500/20 active:scale-95 cursor-pointer"
+          >
+            <KeyRound className="w-4 h-4" />
+            <span>{isChangingPin ? 'Cancel Passcode Change' : 'Change Passcode'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleResetPasscode}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold transition-all active:scale-95 cursor-pointer"
+          >
+            Reset to Default ({defaultPasscode})
+          </button>
+        </div>
+
+        {/* Change Passcode Drawer Form */}
+        {isChangingPin && (
+          <form
+            onSubmit={handleChangePasscodeSubmit}
+            className="p-4 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-200/60 dark:border-indigo-800/60 space-y-4 animate-in fade-in duration-200 mt-3"
+          >
+            <h4 className="text-xs font-bold text-indigo-900 dark:text-indigo-200 uppercase tracking-wider">
+              Update 4-Digit Passcode
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Current Passcode
+                </label>
+                <input
+                  type="password"
+                  maxLength={4}
+                  required
+                  placeholder="e.g. 8052"
+                  value={pinChangeState.currentPin}
+                  onChange={(e) => setPinChangeState(p => ({ ...p, currentPin: e.target.value.replace(/\D/g, '').slice(0, 4) }))}
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500 font-mono tracking-widest text-center"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  New 4-Digit Passcode
+                </label>
+                <input
+                  type="password"
+                  maxLength={4}
+                  required
+                  placeholder="4 digits"
+                  value={pinChangeState.newPin}
+                  onChange={(e) => setPinChangeState(p => ({ ...p, newPin: e.target.value.replace(/\D/g, '').slice(0, 4) }))}
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500 font-mono tracking-widest text-center"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Confirm New Passcode
+                </label>
+                <input
+                  type="password"
+                  maxLength={4}
+                  required
+                  placeholder="4 digits"
+                  value={pinChangeState.confirmPin}
+                  onChange={(e) => setPinChangeState(p => ({ ...p, confirmPin: e.target.value.replace(/\D/g, '').slice(0, 4) }))}
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500 font-mono tracking-widest text-center"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setIsChangingPin(false)}
+                className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-300 dark:hover:bg-slate-700 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-md shadow-indigo-500/20 transition-all"
+              >
+                Save New Passcode
+              </button>
+            </div>
+          </form>
+        )}
       </div>
 
       {/* Storage Analytics & Status Card */}

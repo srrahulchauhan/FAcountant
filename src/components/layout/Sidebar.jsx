@@ -15,9 +15,11 @@ import {
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
-  HardDrive
+  HardDrive,
+  Lock
 } from 'lucide-react'
 import { useFinancial } from '../../context/FinancialContext'
+import { useSecurity } from '../../context/SecurityContext'
 
 const NAV_ITEMS = [
   { path: '/', label: 'Overview Dashboard', icon: LayoutDashboard },
@@ -40,6 +42,7 @@ export const Sidebar = ({
   setIsMobileOpen
 }) => {
   const { unreadCount, settings } = useFinancial()
+  const { lockApp } = useSecurity()
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-colors select-none">
@@ -117,9 +120,27 @@ export const Sidebar = ({
         })}
       </div>
 
+      {/* Lock Application Button */}
+      <div className="p-3 border-t border-slate-100 dark:border-slate-800">
+        <button
+          type="button"
+          onClick={() => {
+            setIsMobileOpen(false)
+            lockApp()
+          }}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50/70 hover:bg-rose-100 dark:bg-rose-950/20 dark:hover:bg-rose-950/40 border border-rose-200/50 dark:border-rose-900/30 transition-all active:scale-95 cursor-pointer ${
+            isCollapsed && !isMobileOpen ? 'justify-center' : ''
+          }`}
+          title="Lock App (Privacy Mode)"
+        >
+          <Lock className="w-4 h-4 shrink-0" />
+          {(!isCollapsed || isMobileOpen) && <span>Lock Vault (Passcode)</span>}
+        </button>
+      </div>
+
       {/* Storage & User Status Card */}
       {(!isCollapsed || isMobileOpen) && (
-        <div className="p-3 border-t border-slate-100 dark:border-slate-800">
+        <div className="px-3 pb-3">
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0">
               {settings.profile?.name ? settings.profile.name.charAt(0) : 'U'}

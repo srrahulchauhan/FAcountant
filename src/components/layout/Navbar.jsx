@@ -10,10 +10,12 @@ import {
   RefreshCw,
   AlertCircle,
   ArrowDownLeft,
-  ArrowUpRight
+  ArrowUpRight,
+  Lock
 } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 import { useFinancial } from '../../context/FinancialContext'
+import { useSecurity } from '../../context/SecurityContext'
 
 const PAGE_TITLES = {
   '/': 'Financial Overview',
@@ -37,6 +39,7 @@ export const Navbar = ({
   const location = useLocation()
   const { isDark, toggleTheme } = useTheme()
   const { saveStatus, unreadCount, settings } = useFinancial()
+  const { lockApp } = useSecurity()
 
   const currentTitle = PAGE_TITLES[location.pathname] || 'Dashboard'
 
@@ -129,6 +132,17 @@ export const Navbar = ({
             aria-label="Toggle theme"
           >
             {isDark ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-slate-700" />}
+          </button>
+
+          {/* Quick Lock Button (Privacy Mode) */}
+          <button
+            type="button"
+            onClick={lockApp}
+            className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            title="Lock Vault (Passcode Protection)"
+            aria-label="Lock app"
+          >
+            <Lock className="w-5 h-5" />
           </button>
         </div>
       </div>

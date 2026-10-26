@@ -99,10 +99,22 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   animation: radarPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
-.animate-gradient-mesh {
-  background-size: 200% 200%;
-  animation: gradientShift 6s ease infinite;
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20%, 60% {
+    transform: translateX(-10px);
+  }
+  40%, 80% {
+    transform: translateX(10px);
+  }
 }
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
 
 /* Glassmorphism Classes */
 .glass-panel {
