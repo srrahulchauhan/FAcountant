@@ -124,7 +124,13 @@ export const LoanManagement = () => {
             return (
               <div
                 key={loan.id}
-                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all space-y-4"
+                onClick={() => setViewHistoryLoan(loan)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') setViewHistoryLoan(loan)
+                }}
+                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg transition-all space-y-4 cursor-pointer hover:border-purple-500/40 active:scale-[0.99]"
               >
                 {/* Header Row */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -146,7 +152,7 @@ export const LoanManagement = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2 self-start sm:self-auto">
+                  <div className="flex items-center gap-2 self-start sm:self-auto" onClick={(e) => e.stopPropagation()}>
                     {balance > 0 && (
                       <button
                         type="button"

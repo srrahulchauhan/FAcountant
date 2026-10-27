@@ -125,7 +125,13 @@ export const RentManagement = () => {
             return (
               <div
                 key={rent.id}
-                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all space-y-4"
+                onClick={() => setViewHistoryRent(rent)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') setViewHistoryRent(rent)
+                }}
+                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg transition-all space-y-4 cursor-pointer hover:border-cyan-500/40 active:scale-[0.99]"
               >
                 {/* Header Row */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -147,7 +153,7 @@ export const RentManagement = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2 self-start sm:self-auto">
+                  <div className="flex items-center gap-2 self-start sm:self-auto" onClick={(e) => e.stopPropagation()}>
                     <button
                       type="button"
                       onClick={() => setPayRentId(rent.id)}

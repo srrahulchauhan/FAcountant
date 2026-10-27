@@ -87,12 +87,29 @@ export const SummaryCard = ({
   return (
     <div
       onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault()
+          onClick()
+        }
+      }}
       className={`group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl ${conf.hoverGlow} ${
-        onClick ? 'cursor-pointer' : ''
+        onClick ? 'cursor-pointer active:scale-[0.98] select-none hover:border-indigo-500/50 dark:hover:border-indigo-500/50' : ''
       }`}
     >
       {/* Top Hairline Gradient Accent */}
       <div className={`absolute top-0 left-0 right-0 h-[3px] ${conf.topBar} opacity-85 group-hover:h-[4px] transition-all`} />
+
+      {/* Clickable Quick Action Indicator */}
+      {onClick && (
+        <div className="absolute top-3.5 right-3.5 opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-1 group-hover:translate-x-0 z-20">
+          <span className="p-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 border border-slate-200 dark:border-slate-700 flex items-center shadow-xs">
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </span>
+        </div>
+      )}
 
       {/* Shimmer Light Bar Sweep */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity">

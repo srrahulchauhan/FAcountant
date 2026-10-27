@@ -149,32 +149,44 @@ export const Expenses = () => {
         </button>
       </div>
 
-      {/* Quick Period Spending Summary Cards */}
+      {/* Quick Period Spending Summary Cards (Clickable) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        <div className="p-3.5 sm:p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Today</p>
-          <p className="mt-1 text-base sm:text-xl font-bold font-heading text-slate-900 dark:text-white font-mono">
-            {formatINR(totals.today)}
-          </p>
-        </div>
-        <div className="p-3.5 sm:p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">This Week</p>
-          <p className="mt-1 text-base sm:text-xl font-bold font-heading text-slate-900 dark:text-white font-mono">
-            {formatINR(totals.week)}
-          </p>
-        </div>
-        <div className="p-3.5 sm:p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <p className="text-[11px] font-semibold text-indigo-500 uppercase tracking-wider">This Month</p>
-          <p className="mt-1 text-base sm:text-xl font-bold font-heading text-indigo-600 dark:text-indigo-400 font-mono">
-            {formatINR(totals.month)}
-          </p>
-        </div>
-        <div className="p-3.5 sm:p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">This Year</p>
-          <p className="mt-1 text-base sm:text-xl font-bold font-heading text-slate-900 dark:text-white font-mono">
-            {formatINR(totals.year)}
-          </p>
-        </div>
+        {[
+          { key: 'Today', label: 'Today', amount: totals.today, color: 'text-slate-900 dark:text-white' },
+          { key: 'Week', label: 'This Week', amount: totals.week, color: 'text-slate-900 dark:text-white' },
+          { key: 'Month', label: 'This Month', amount: totals.month, color: 'text-indigo-600 dark:text-indigo-400' },
+          { key: 'Year', label: 'This Year', amount: totals.year, color: 'text-slate-900 dark:text-white' },
+        ].map(item => (
+          <div
+            key={item.key}
+            onClick={() => {
+              setDateFilter(dateFilter === item.key ? 'All' : item.key)
+              setCurrentPage(1)
+            }}
+            role="button"
+            tabIndex={0}
+            className={`p-3.5 sm:p-4 rounded-xl bg-white dark:bg-slate-900 border shadow-sm cursor-pointer transition-all hover:-translate-y-1 hover:shadow-md active:scale-95 select-none ${
+              dateFilter === item.key
+                ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-indigo-500/10'
+                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <p className={`text-[11px] font-semibold uppercase tracking-wider ${dateFilter === item.key ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-400'}`}>
+                {item.label}
+              </p>
+              {dateFilter === item.key && (
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+              )}
+            </div>
+            <p className={`mt-1 text-base sm:text-xl font-bold font-heading font-mono ${item.color}`}>
+              {formatINR(item.amount)}
+            </p>
+            <p className="mt-0.5 text-[10px] text-slate-400">
+              {dateFilter === item.key ? 'Filter active (click to clear)' : 'Click to filter'}
+            </p>
+          </div>
+        ))}
       </div>
 
       {/* Filter and Search Bar */}

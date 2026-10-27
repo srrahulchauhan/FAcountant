@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import { useOutletContext } from 'react-router-dom'
+import { useOutletContext, useNavigate } from 'react-router-dom'
 import { useFinancial } from '../context/FinancialContext'
 import { SummaryCard } from '../components/dashboard/SummaryCard'
 import { IncomeExpenseChart } from '../components/dashboard/IncomeExpenseChart'
@@ -57,6 +57,8 @@ export const Dashboard = () => {
     openQuickExpense,
     openQuickIncome
   } = useOutletContext()
+
+  const navigate = useNavigate()
 
   // Dashboard Time Filter: 'all' | 'today' | 'week' | 'month' | 'year'
   const [timeFilter, setTimeFilter] = useState('month')
@@ -149,10 +151,29 @@ export const Dashboard = () => {
       {/* Featured Executive Hero Cards (Top Balance & Income Flow) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Hero Card 1: Total Available Balance with Live Gradient Ambient Glow */}
-        <div className="lg:col-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-slate-900 to-purple-950 p-6 sm:p-7 text-white shadow-xl border border-indigo-500/20 group hover:shadow-2xl hover:shadow-indigo-500/15 transition-all duration-300">
+        <div
+          onClick={() => navigate('/transactions')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              navigate('/transactions')
+            }
+          }}
+          className="lg:col-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-slate-900 to-purple-950 p-6 sm:p-7 text-white shadow-xl border border-indigo-500/20 group hover:shadow-2xl hover:shadow-indigo-500/15 transition-all duration-300 cursor-pointer active:scale-[0.99] select-none hover:border-indigo-400/40"
+        >
           {/* Animated decorative background mesh */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-transparent rounded-full blur-3xl -translate-y-12 translate-x-12 animate-pulse-glow pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-2xl translate-y-12 -translate-x-12 pointer-events-none" />
+
+          {/* Clickable Quick Action Indicator */}
+          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-1 group-hover:translate-x-0 z-20">
+            <span className="px-2.5 py-1 rounded-xl bg-white/10 backdrop-blur-md text-xs font-semibold text-indigo-200 border border-white/20 flex items-center gap-1 shadow-sm">
+              <span>View Ledger</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </span>
+          </div>
 
           <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
             <div className="flex items-start justify-between gap-4">
@@ -177,7 +198,7 @@ export const Dashboard = () => {
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-indigo-200/80">
-                  Consolidated liquid net worth across all bank accounts and cash holdings
+                  Consolidated liquid net worth across all bank accounts and cash holdings • Click to view all transactions
                 </p>
               </div>
 
@@ -200,7 +221,7 @@ export const Dashboard = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                 <button
                   type="button"
                   onClick={openQuickIncome}
@@ -223,7 +244,26 @@ export const Dashboard = () => {
         </div>
 
         {/* Hero Card 2: Income Stream & Cashflow Burn Ratio */}
-        <div className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-6 sm:p-7 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+        <div
+          onClick={() => navigate('/transactions')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              navigate('/transactions')
+            }
+          }}
+          className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-6 sm:p-7 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group cursor-pointer active:scale-[0.99] select-none hover:border-emerald-500/40"
+        >
+          {/* Clickable Quick Action Indicator */}
+          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-1 group-hover:translate-x-0 z-20">
+            <span className="px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1 shadow-sm">
+              <span>View Inflows</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </span>
+          </div>
+
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
@@ -233,7 +273,7 @@ export const Dashboard = () => {
                 <AnimatedNumber value={activeIncome} />
               </h3>
               <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                Salary, freelance revenue & dividends
+                Salary, freelance revenue & dividends • Click to view
               </p>
             </div>
 
@@ -262,7 +302,7 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      {/* 8 Focused Metric Cards in Spacious 4-Column Grid (No Truncation Ellipses) */}
+      {/* 8 Focused Metric Cards in Spacious 4-Column Grid (All Clickable) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         {/* 3. Today's Expenses */}
         <SummaryCard
@@ -271,6 +311,7 @@ export const Dashboard = () => {
           icon={Receipt}
           variant="amber"
           subtitle="Cleared expenses today"
+          onClick={() => navigate('/expenses')}
         />
 
         {/* 4. Monthly Expenses */}
@@ -280,6 +321,7 @@ export const Dashboard = () => {
           icon={Calendar}
           variant="purple"
           subtitle="Current calendar month"
+          onClick={() => navigate('/expenses')}
         />
 
         {/* 5. Total EMI Paid */}
@@ -289,6 +331,7 @@ export const Dashboard = () => {
           icon={CreditCard}
           variant="blue"
           subtitle={`${emiPayments.length} installments completed`}
+          onClick={() => navigate('/emi')}
         />
 
         {/* 6. Outstanding Loans */}
@@ -298,6 +341,7 @@ export const Dashboard = () => {
           icon={Landmark}
           variant="rose"
           subtitle={`${loans.length} active borrowings`}
+          onClick={() => navigate('/loans')}
         />
 
         {/* 7. Monthly Rent */}
@@ -307,6 +351,7 @@ export const Dashboard = () => {
           icon={Home}
           variant="cyan"
           subtitle={`${rentRecords.length} rental properties`}
+          onClick={() => navigate('/rent')}
         />
 
         {/* 8. Upcoming Payments */}
@@ -318,6 +363,7 @@ export const Dashboard = () => {
           variant="indigo"
           subtitle="Due in next 7 days"
           showPulse={financialSummary.upcomingPayments.count > 0}
+          onClick={() => navigate('/notifications')}
         />
 
         {/* 9. Pending Payments */}
@@ -329,6 +375,7 @@ export const Dashboard = () => {
           variant="amber"
           subtitle="Unsettled obligations"
           showPulse={financialSummary.pendingPayments.count > 0}
+          onClick={() => navigate('/transactions')}
         />
 
         {/* 10. Overdue Payments */}
@@ -340,6 +387,7 @@ export const Dashboard = () => {
           variant="rose"
           subtitle={financialSummary.overduePayments.count > 0 ? 'Requires attention' : 'All cleared'}
           showPulse={financialSummary.overduePayments.count > 0}
+          onClick={() => navigate('/notifications')}
         />
       </div>
 

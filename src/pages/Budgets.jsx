@@ -169,7 +169,13 @@ export const Budgets = () => {
             return (
               <div
                 key={cat.id}
-                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4"
+                onClick={() => setIsEditOpen(true)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') setIsEditOpen(true)
+                }}
+                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4 cursor-pointer hover:border-indigo-500/50 hover:shadow-md transition-all active:scale-[0.99] select-none"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">

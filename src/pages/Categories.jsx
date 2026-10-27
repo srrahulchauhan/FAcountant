@@ -124,18 +124,24 @@ export const Categories = () => {
           return (
             <div
               key={cat.id}
-              className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
+              onClick={() => setEditingCategory(cat)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') setEditingCategory(cat)
+              }}
+              className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg transition-all group flex flex-col justify-between cursor-pointer hover:border-indigo-500/40 active:scale-[0.99] select-none"
             >
               <div>
                 <div className="flex items-start justify-between mb-3">
                   <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-md"
+                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform"
                     style={{ backgroundColor: cat.color || '#6366f1' }}
                   >
                     <IconComponent className="w-6 h-6" />
                   </div>
 
-                  <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                     <button
                       type="button"
                       onClick={() => setEditingCategory(cat)}

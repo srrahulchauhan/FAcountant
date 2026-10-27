@@ -130,7 +130,13 @@ export const EMIManagement = () => {
             return (
               <div
                 key={emi.id}
-                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all space-y-4"
+                onClick={() => setViewHistoryEmi(emi)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') setViewHistoryEmi(emi)
+                }}
+                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg transition-all space-y-4 cursor-pointer hover:border-indigo-500/40 active:scale-[0.99]"
               >
                 {/* Header row */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -152,7 +158,7 @@ export const EMIManagement = () => {
                   </div>
 
                   {/* Top Right Actions */}
-                  <div className="flex items-center gap-2 self-start sm:self-auto">
+                  <div className="flex items-center gap-2 self-start sm:self-auto" onClick={(e) => e.stopPropagation()}>
                     <button
                       type="button"
                       onClick={() => setPayEmiId(emi.id)}
